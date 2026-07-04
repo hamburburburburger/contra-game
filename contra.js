@@ -1116,89 +1116,70 @@ const game = {
   },
 
   draw() {
-    try {
-      // Sky gradient
-      const skyGrd = ctx.createLinearGradient(0, 0, 0, GAME_HEIGHT);
-      skyGrd.addColorStop(0, '#1a0a2e');
-      skyGrd.addColorStop(0.4, '#2d1b69');
-      skyGrd.addColorStop(0.7, '#1a3a4a');
-      skyGrd.addColorStop(1, '#0a1a0a');
-      ctx.fillStyle = skyGrd;
-      ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-    } catch(e) { console.error('draw sky:', e.message); throw e; }
+    // Sky gradient
+    const skyGrd = ctx.createLinearGradient(0, 0, 0, GAME_HEIGHT);
+    skyGrd.addColorStop(0, '#1a0a2e');
+    skyGrd.addColorStop(0.4, '#2d1b69');
+    skyGrd.addColorStop(0.7, '#1a3a4a');
+    skyGrd.addColorStop(1, '#0a1a0a');
+    ctx.fillStyle = skyGrd;
+    ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-    try {
-      // Stars
-      ctx.fillStyle = '#ffffff';
-      for (let i = 0; i < 50; i++) {
-        const sx = ((i * 137 + 50) % GAME_WIDTH + GAME_WIDTH - (camera.x * 0.05 % GAME_WIDTH)) % GAME_WIDTH;
-        const sy = (i * 97 + 20) % (GAME_HEIGHT * 0.5);
-        const twinkle = Math.sin(Date.now() / 500 + i) * 0.5 + 0.5;
-        ctx.globalAlpha = twinkle * 0.8;
-        ctx.fillRect(sx, sy, 1.5, 1.5);
+    // Stars
+    ctx.fillStyle = '#ffffff';
+    for (let i = 0; i < 50; i++) {
+      const sx = ((i * 137 + 50) % GAME_WIDTH + GAME_WIDTH - (camera.x * 0.05 % GAME_WIDTH)) % GAME_WIDTH;
+      const sy = (i * 97 + 20) % (GAME_HEIGHT * 0.5);
+      const twinkle = Math.sin(Date.now() / 500 + i) * 0.5 + 0.5;
+      ctx.globalAlpha = twinkle * 0.8;
+      ctx.fillRect(sx, sy, 1.5, 1.5);
+    }
+    ctx.globalAlpha = 1;
+
+    this.drawMountains();
+    this.drawJungle();
+
+    for (const p of platforms) { p.draw(); }
+
+    for (const pu of this.powerUps) {
+      if (!pu.alive) continue;
+      const py = pu.y + Math.sin(pu.bobPhase) * 5;
+      const sx = pu.x - camera.x;
+      const sy = py - camera.y;
+      if (sx > GAME_WIDTH + 20 || sx + pu.w < -20) continue;
+      const glow = Math.sin(Date.now() / 200) * 0.3 + 0.7;
+      ctx.globalAlpha = glow;
+      if (pu.type.startsWith('weapon_')) {
+        ctx.fillStyle = '#ffaa00';
+        ctx.shadowColor = '#ffaa00';
+      } else {
+        ctx.fillStyle = '#44ff44';
+        ctx.shadowColor = '#44ff44';
       }
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.arc(sx + 10, sy + 10, 10, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
       ctx.globalAlpha = 1;
-    } catch(e) { console.error('draw stars:', e.message); throw e; }
-
-    try { this.drawMountains(); } catch(e) { console.error('draw mountains:', e.message); throw e; }
-    try { this.drawJungle(); } catch(e) { console.error('draw jungle:', e.message); throw e; }
-
-    try {
-      for (const p of platforms) { p.draw(); }
-    } catch(e) { console.error('draw platforms:', e.message); throw e; }
-
-    try {
-      for (const pu of this.powerUps) {
-        if (!pu.alive) continue;
-        const py = pu.y + Math.sin(pu.bobPhase) * 5;
-        const sx = pu.x - camera.x;
-        const sy = py - camera.y;
-        if (sx > GAME_WIDTH + 20 || sx + pu.w < -20) continue;
-        const glow = Math.sin(Date.now() / 200) * 0.3 + 0.7;
-        ctx.globalAlpha = glow;
-        if (pu.type.startsWith('weapon_')) {
-          ctx.fillStyle = '#ffaa00';
-          ctx.shadowColor = '#ffaa00';
-        } else {
-          ctx.fillStyle = '#44ff44';
-          ctx.shadowColor = '#44ff44';
-        }
-        ctx.shadowBlur = 10;
-        ctx.beginPath();
-        ctx.arc(sx + 10, sy + 10, 10, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-        ctx.globalAlpha = 1;
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 10px Courier New';
-        ctx.textAlign = 'center';
-        if (pu.type.startsWith('weapon_')) {
-          ctx.fillText('W', sx + 10, sy + 14);
-        } else {
-          ctx.fillText('+', sx + 10, sy + 14);
-        }
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 10px Courier New';
+      ctx.textAlign = 'center';
+      if (pu.type.startsWith('weapon_')) {
+        ctx.fillText('W', sx + 10, sy + 14);
+      } else {
+        ctx.fillText('+', sx + 10, sy + 14);
       }
-    } catch(e) { console.error('draw powerups:', e.message); throw e; }
+    }
 
-    try {
-      for (const e of this.enemies) { e.draw(); }
-    } catch(e) { console.error('draw enemies:', e.message); throw e; }
+    for (const e of this.enemies) { e.draw(); }
+    for (const b of bullets) { b.draw(); }
+    if (this.player1) this.player1.draw();
+    if (this.player2) this.player2.draw();
+    for (const p of particles) { p.draw(); }
 
-    try {
-      for (const b of bullets) { b.draw(); }
-    } catch(e) { console.error('draw bullets:', e.message); throw e; }
-
-    try {
-      if (this.player1) this.player1.draw();
-      if (this.player2) this.player2.draw();
-    } catch(e) { console.error('draw players:', e.message); throw e; }
-
-    try {
-      for (const p of particles) { p.draw(); }
-    } catch(e) { console.error('draw particles:', e.message); throw e; }
-
-    try { this.drawHUD(); } catch(e) { console.error('draw hud:', e.message); throw e; }
-    try { this.drawProgress(); } catch(e) { console.error('draw progress:', e.message); throw e; }
+    this.drawHUD();
+    this.drawProgress();
   },
 
   drawMountains() {
@@ -1362,45 +1343,18 @@ window.addEventListener('keydown', e => {
 
 // --- Main Game Loop ---
 let lastTime = performance.now();
-let frameCount = 0;
-let errorCount = 0;
 
 function gameLoop(timestamp) {
-  try {
-    const dt = Math.min((timestamp - lastTime) / 16.67, 3);
-    lastTime = timestamp;
+  const dt = Math.min((timestamp - lastTime) / 16.67, 3);
+  lastTime = timestamp;
 
-    ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+  ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-    if (game.state === 'playing') {
-      game.update(dt);
-    }
-
-    game.draw();
-    frameCount++;
-  } catch (err) {
-    errorCount++;
-    console.error('=== GAME ERROR #' + errorCount + ' at frame ' + frameCount + ' ===');
-    console.error(err.message);
-    console.error(err.stack);
-
-    // Show error on screen so user can see it
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-    ctx.fillStyle = '#ff0000';
-    ctx.font = 'bold 24px Courier New';
-    ctx.textAlign = 'center';
-    ctx.fillText('GAME ERROR #' + errorCount, GAME_WIDTH/2, GAME_HEIGHT/2 - 40);
-    ctx.font = '16px Courier New';
-    ctx.fillStyle = '#fff';
-    ctx.fillText(err.message, GAME_WIDTH/2, GAME_HEIGHT/2);
-    ctx.fillText('Frame: ' + frameCount, GAME_WIDTH/2, GAME_HEIGHT/2 + 25);
-    ctx.fillText('State: ' + game.state, GAME_WIDTH/2, GAME_HEIGHT/2 + 50);
-    ctx.fillText('Players: ' + (game.player1 ? (game.player1.alive ? 'alive' : 'dead') : 'null') + ' / ' + (game.player2 ? (game.player2.alive ? 'alive' : 'dead') : 'null'), GAME_WIDTH/2, GAME_HEIGHT/2 + 75);
-    ctx.textAlign = 'left';
-
-    lastTime = timestamp;
+  if (game.state === 'playing') {
+    game.update(dt);
   }
+
+  game.draw();
 
   requestAnimationFrame(gameLoop);
 }
