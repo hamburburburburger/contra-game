@@ -623,6 +623,8 @@ class Enemy {
     this.shootCooldown -= dt;
 
     const dx = player.x - this.x;
+    const dy = player.y - this.y;
+
     if (Math.abs(dx) > 60) {
       this.x += Math.sign(dx) * 1.2 * dt;
     }
