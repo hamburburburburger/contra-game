@@ -1475,13 +1475,13 @@ window.addEventListener('keydown', e => {
     game.state = 'playing';
     showScreen(null);
   }
-  if (e.code === 'Enter' && (game.state === 'menu' || game.code === 'gameover' || game.state === 'victory')) {
+  if (e.code === 'Enter' && (game.state === 'menu' || game.state === 'gameover' || game.state === 'victory')) {
     startGame();
   }
 });
 
 // --- Main Game Loop ---
-let lastTime = 0;
+let lastTime = performance.now();
 
 function gameLoop(timestamp) {
   const dt = Math.min((timestamp - lastTime) / 16.67, 3); // normalize to ~60fps, cap at 3x
