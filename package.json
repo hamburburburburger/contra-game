@@ -1,0 +1,11 @@
+{
+  "name": "contra-game",
+  "version": "1.0.0",
+  "description": "HTML5 Contra Game - Modern Remake",
+  "main": "contra.js",
+  "scripts": {
+    "start": "npx http-server -p 8080"
+  },
+  "keywords": ["contra", "game", "html5", "canvas"],
+  "license": "MIT"
+}
