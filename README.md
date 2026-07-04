@@ -31,14 +31,15 @@
 | Enter | 射击 |
 | Numpad 0 | 切换武器 |
 
+## 在线试玩
+
+🎮 [点击在这里玩魂斗罗!](https://hamburburburburger.github.io/contra-game/)
+
+---
+
 ## 运行方式
 
-直接打开 `index.html` 即可游玩，无需任何服务器。
-
-也可以部署到 GitHub Pages：
-1. 将此仓库 fork 到你的 GitHub 账号
-2. 在仓库设置中启用 GitHub Pages（选择 main/master 分支）
-3. 访问 `https://你的用户名.github.io/contra-game/`
+本地运行：直接打开 `index.html` 即可游玩，无需任何服务器。
 
 ## 技术栈
 
